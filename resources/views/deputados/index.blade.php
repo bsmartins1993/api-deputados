@@ -41,7 +41,12 @@
     <tbody>
         @foreach($deputados as $deputado)
         <tr>
-            <td>{{ $deputado->nome }}</td>
+            <td>
+                @if($deputado->url_foto)
+                    <img src="{{ $deputado->url_foto }}" alt="Foto de {{ $deputado->nome }}" width="80">
+                @endif
+                {{ $deputado->nome }}
+            </td>
             <td>{{ $deputado->sigla_partido }}</td>
             <td>{{ $deputado->sigla_uf }}</td>
             <td>

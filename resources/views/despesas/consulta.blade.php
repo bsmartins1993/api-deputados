@@ -4,10 +4,11 @@
 @section('content')
 <h1>
     Consulta de Despesas
-    <span class="badge bg-success" style="font-size:1rem;">
-        Total: R$ {{ number_format($total, 2, ',', '.') }}
-    </span>
 </h1>
+<div class="alert alert-success text-center my-4" style="font-size:1.5rem;">
+    <strong>Total das despesas filtradas:</strong>
+    R$ {{ number_format($total, 2, ',', '.') }}
+</div>
 <form method="GET" class="row g-2 mb-3">
     <div class="col">
         <input type="text" class="form-control" id="deputado" name="deputado" placeholder="Nome do Deputado" value="{{ request('deputado') }}">
@@ -46,14 +47,42 @@
     </div>
 </form>
 
+@php
+    $sort = request('sort', 'ano');
+    $order = request('order', 'desc');
+    function sortIcon($col, $sort, $order) {
+        if ($sort !== $col) return '';
+        return '<span>' . ($order === 'asc' ? '▲' : '▼') . '</span>';
+    }
+@endphp
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Deputado</th>
-            <th>Ano</th>
-            <th>Mês</th>
-            <th>Tipo Despesa</th>
-            <th>Valor</th>
+            <th style="padding-right: 40px; min-width: 200px;">
+                <a class="sort-link" href="{{ request()->fullUrlWithQuery(['sort' => 'deputado', 'order' => $sort == 'deputado' && $order == 'asc' ? 'desc' : 'asc']) }}">
+                    Deputado {!! sortIcon('deputado', $sort, $order) !!}
+                </a>
+            </th>
+            <th>
+                <a class="sort-link" href="{{ request()->fullUrlWithQuery(['sort' => 'mes', 'order' => $sort == 'mes' && $order == 'asc' ? 'desc' : 'asc']) }}">
+                    Mês {!! sortIcon('mes', $sort, $order) !!}
+                </a>
+            </th>
+            <th>
+                <a class="sort-link" href="{{ request()->fullUrlWithQuery(['sort' => 'ano', 'order' => $sort == 'ano' && $order == 'asc' ? 'desc' : 'asc']) }}">
+                    Ano {!! sortIcon('ano', $sort, $order) !!}
+                </a>
+            </th>
+            <th>
+                <a class="sort-link" href="{{ request()->fullUrlWithQuery(['sort' => 'tipo_despesa', 'order' => $sort == 'tipo_despesa' && $order == 'asc' ? 'desc' : 'asc']) }}">
+                    Tipo Despesa {!! sortIcon('tipo_despesa', $sort, $order) !!}
+                </a>
+            </th>
+            <th style="padding-left: 40px; min-width: 120px; text-align: right;">
+                <a class="sort-link" href="{{ request()->fullUrlWithQuery(['sort' => 'valor_documento', 'order' => $sort == 'valor_documento' && $order == 'asc' ? 'desc' : 'asc']) }}">
+                    Valor {!! sortIcon('valor_documento', $sort, $order) !!}
+                </a>
+            </th>
             <th>Fornecedor</th>
             <th>Documento</th>
         </tr>
@@ -61,8 +90,7 @@
     <tbody>
         @foreach($despesas as $despesa)
         <tr>
-            <td>{{ $despesa->deputado->nome ?? 'N/A' }}</td>
-            <td>{{ $despesa->ano }}</td>
+            <td style="padding-right: 40px; min-width: 200px; text-align: left;">{{ $despesa->deputado->nome ?? 'N/A' }}</td>
             <td>
                 @php
                     $meses = [
@@ -73,8 +101,9 @@
                 @endphp
                 {{ $meses[$despesa->mes] ?? $despesa->mes }}
             </td>
+            <td>{{ $despesa->ano }}</td>
             <td>{{ $despesa->tipo_despesa }}</td>
-            <td>R$ {{ number_format($despesa->valor_documento, 2, ',', '.') }}</td>
+            <td style="padding-left: 40px; min-width: 120px; text-align: right;">R$ {{ number_format($despesa->valor_documento, 2, ',', '.') }}</td>
             <td>{{ $despesa->nome_fornecedor }}</td>
             <td>
                 @if($despesa->url_documento)
@@ -107,3 +136,19 @@ $(function() {
 });
 </script>
 @endpush
+
+<style>
+    .sort-link {
+        color: inherit !important;
+        text-decoration: none !important;
+        font-weight: bold;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px; /* espaço entre texto e ícone */
+    }
+    .sort-link:hover {
+        text-decoration: underline;
+        color: #198754; /* cor de destaque do Bootstrap */
+    }
+</style>
