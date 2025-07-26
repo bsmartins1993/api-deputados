@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>API Deputados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> <!-- Adicionado -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Adicionado -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script> <!-- Adicionado -->
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
@@ -23,6 +26,6 @@
     <div class="container mt-4">
         @yield('content')
     </div>
-    @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

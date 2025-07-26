@@ -29,6 +29,6 @@ class Despesa extends Model
 
     public function deputado()
     {
-        return $this->belongsTo(Deputado::class);
+        return $this->belongsTo(Deputado::class, 'deputado_id');
     }
 }

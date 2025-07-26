@@ -9,4 +9,5 @@ Route::get('/', function () {
 });
 
 Route::get('/deputados', [DeputadoController::class, 'index'])->name('deputados.index');
-Route::get('/consulta-despesas', [DespesaController::class, 'index']);
+Route::get('/consulta-despesas', [DespesaController::class, 'consulta']);
+Route::get('/deputados/autocomplete', [DeputadoController::class, 'autocomplete']);

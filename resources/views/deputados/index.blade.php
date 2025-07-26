@@ -5,38 +5,50 @@
 <h1>Deputados</h1>
 <form method="GET" class="row g-2 mb-3">
     <div class="col">
-        <input type="text" class="form-control" name="nome" id="busca-nome" placeholder="Nome" value="{{ request('nome') }}">
+        <input type="text" class="form-control" id="busca-nome" name="nome" placeholder="Nome do Deputado" value="{{ request('nome') }}">
     </div>
     <div class="col">
-        <input type="text" class="form-control" name="sigla_partido" id="busca-partido" placeholder="Partido" value="{{ request('sigla_partido') }}">
+        <select class="form-control" name="sigla_partido">
+            <option value="">Partido</option>
+            @foreach($partidos as $partido)
+                <option value="{{ $partido }}" {{ request('sigla_partido') == $partido ? 'selected' : '' }}>{{ $partido }}</option>
+            @endforeach
+        </select>
     </div>
     <div class="col">
-        <input type="text" class="form-control" name="sigla_uf" id="busca-uf" placeholder="UF" value="{{ request('sigla_uf') }}">
+        <select class="form-control" name="sigla_uf">
+            <option value="">UF</option>
+            @foreach($ufs as $uf)
+                <option value="{{ $uf }}" {{ request('sigla_uf') == $uf ? 'selected' : '' }}>{{ $uf }}</option>
+            @endforeach
+        </select>
     </div>
     <div class="col">
         <button type="submit" class="btn btn-primary">Buscar</button>
-        <a href="{{ route('deputados.index') }}" class="btn btn-secondary">Limpar</a>
+        <a href="{{ url('/deputados') }}" class="btn btn-secondary">Limpar</a>
     </div>
 </form>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Foto</th>
             <th>Nome</th>
             <th>Partido</th>
             <th>UF</th>
-            <th>Legislatura</th>
+            <th>Despesas</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($deputados as $dep)
+        @foreach($deputados as $deputado)
         <tr>
-            <td><img src="{{ $dep->url_foto }}" width="50"></td>
-            <td>{{ $dep->nome }}</td>
-            <td>{{ $dep->sigla_partido }}</td>
-            <td>{{ $dep->sigla_uf }}</td>
-            <td>{{ $dep->id_legislatura }}</td>
+            <td>{{ $deputado->nome }}</td>
+            <td>{{ $deputado->sigla_partido }}</td>
+            <td>{{ $deputado->sigla_uf }}</td>
+            <td>
+                <a href="{{ url('/consulta-despesas?deputado_id=' . $deputado->id) }}" class="btn btn-sm btn-info">
+                    Ver Despesas
+                </a>
+            </td>
         </tr>
         @endforeach
     </tbody>
@@ -68,4 +80,22 @@ document.getElementById('busca-nome').addEventListener('keyup', buscarDeputados)
 document.getElementById('busca-partido').addEventListener('keyup', buscarDeputados);
 document.getElementById('busca-uf').addEventListener('keyup', buscarDeputados);
 </script>
+@push('scripts')
+<script>
+$(function() {
+    $("#busca-nome").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{{ url('/deputados/autocomplete') }}",
+                data: { term: request.term },
+                success: function(data) {
+                    response(data);
+                }
+            });
+        },
+        minLength: 2
+    });
+});
+</script>
+@endpush
 @endsection
